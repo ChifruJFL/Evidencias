@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CultivaUP – Gestión del huerto universitario</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&display=swap">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light;
+--bg:#eef3ec;--card:#fff;--tx:#1b2a20;--mut:#5b6e60;--pri:#2f6b3a;--on:#fff;--bd:#d3dfd0;--bad:#b3261e;--warn:#9a5b00;--wbg:#fff3dc;--ok:#e3f1e2}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0f1712;--card:#18231c;--tx:#e6efe7;--mut:#9db2a1;--pri:#6cc07a;--on:#0f1712;--bd:#2c3d31;--bad:#ff8a80;--warn:#ffc266;--wbg:#33280f;--ok:#1d3322}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0f1712;--card:#18231c;--tx:#e6efe7;--mut:#9db2a1;--pri:#6cc07a;--on:#0f1712;--bd:#2c3d31;--bad:#ff8a80;--warn:#ffc266;--wbg:#33280f;--ok:#1d3322}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+h1,h2,h3{font-family:"Bricolage Grotesque",system-ui,sans-serif;margin:0}
+header{background:var(--pri);color:var(--on);padding:10px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+header h1{font-size:1.4rem;font-weight:800}header small{opacity:.9}
+nav{display:flex;gap:4px;overflow-x:auto;padding:8px 12px;background:var(--card);border-bottom:1px solid var(--bd);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+nav button{white-space:nowrap;border:0;background:none;color:var(--mut);padding:8px 12px;border-radius:8px;font:inherit;cursor:pointer}
+nav button.on{background:var(--ok);color:var(--tx);font-weight:700}
+main{max-width:1000px;margin:0 auto;padding:16px}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.btn,button{font:inherit}
+.btn{background:var(--pri);color:var(--on);border:0;border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:700}
+.tw{overflow-x:auto;background:var(--card);border:1px solid var(--bd);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:560px}th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--bd);vertical-align:top}
+th{color:var(--mut);font-weight:600;font-size:.9rem}tr:last-child td{border-bottom:0}
+td button{background:none;border:1px solid var(--bd);color:var(--tx);border-radius:6px;padding:3px 9px;cursor:pointer}
+td button.del{color:var(--bad)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.stat{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px}.stat b{display:block;font:800 1.9rem "Bricolage Grotesque",sans-serif;color:var(--pri)}
+.box{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px;margin-bottom:16px}
+.al{background:var(--wbg);color:var(--warn);border-radius:8px;padding:8px 12px;margin:6px 0;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.mut{color:var(--mut)}.tag{display:inline-block;padding:1px 9px;border-radius:99px;background:var(--ok);font-size:.85rem}
+.tag.p{background:var(--wbg);color:var(--warn)}
+dialog{border:1px solid var(--bd);border-radius:12px;background:var(--card);color:var(--tx);width:min(440px,94vw);padding:18px}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+label{display:block;margin:8px 0;font-size:.92rem;color:var(--mut)}
+input,select{width:100%;padding:8px;margin-top:3px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit}
+.row{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}.row button{padding:8px 14px;border-radius:8px;border:1px solid var(--bd);background:none;color:var(--tx);cursor:pointer}
+.um{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;align-items:end}
+.login{max-width:420px;margin:12vh auto;text-align:center}.login .box{text-align:left}
+svg{width:100%;height:auto}@media (min-width:900px){#shell{display:grid;grid-template-columns:230px 1fr;align-items:start}#shell nav{flex-direction:column;position:sticky;top:0;height:calc(100vh - 70px);overflow-y:auto;border-right:1px solid var(--bd);border-bottom:0;padding:12px}#shell nav button{text-align:left}main{max-width:none;width:100%}}footer{text-align:center;color:var(--mut);font-size:.85rem;padding:16px}.srch{max-width:280px}:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+</style></head><body>
+<div id="app"></div>
+<dialog id="dlg"><form id="frm" method="dialog"></form></dialog>
+<script>
+const KEY='cultivaup_v2',$=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const iso=d=>new Date(d).toISOString().slice(0,10),today=()=>iso(Date.now()),ago=n=>iso(Date.now()-n*864e5);
+let db,user=null,tab='panel',chartC=null;
+const SC={
+cultivos:{t:'Cultivos',f:[['nombre','Nombre'],['tipo','Tipo de planta'],['siembra','Siembra','date'],['cosecha_est','Cosecha estimada','date'],['estado','Estado','sel',['Activo','Cosechado','En riesgo']],['parcela','Parcela'],['resp','Responsable','ref','usuarios']]},
+riegos:{t:'Riegos',f:[['cultivo','Cultivo','ref','cultivos'],['fecha','Fecha','date'],['litros','Litros','num'],['resp','Responsable','ref','usuarios'],['obs','Observaciones','text',0,1]]},
+cosechas:{t:'Cosechas',f:[['cultivo','Cultivo','ref','cultivos'],['fecha','Fecha','date'],['cantidad','Cantidad','num'],['unidad','Unidad','sel',['kg','piezas','manojos']],['resp','Responsable','ref','usuarios'],['obs','Observaciones','text',0,1]]},
+observaciones:{t:'Observaciones',f:[['cultivo','Cultivo','ref','cultivos'],['fecha','Fecha','date'],['texto','Observación'],['resp','Autor','ref','usuarios']]},
+sensores:{t:'Sensores',f:[['cultivo','Cultivo','ref','cultivos'],['tipo','Tipo','sel',['Humedad','Temperatura']]]},
+lecturas:{t:'Lecturas de sensores',f:[['sensor','Sensor','ref','sensores'],['fecha','Fecha','date'],['valor','Valor (% o °C)','num']]},
+usuarios:{t:'Usuarios',f:[['nombre','Nombre'],['correo','Correo'],['rol','Rol','sel',['Administrador','Encargado','Consulta']]]}};
+function seed(){const U=[{id:1,nombre:'Luis Angel Silva',correo:'luis@cultivaup.demo',rol:'Administrador'},{id:2,nombre:'Rafael Guerrero',correo:'rafael@cultivaup.demo',rol:'Encargado'},{id:3,nombre:'Daniel Ruiz',correo:'daniel@cultivaup.demo',rol:'Consulta'}];
+const C=[{id:10,nombre:'Jitomate saladette',tipo:'Hortaliza',siembra:ago(40),cosecha_est:ago(-35),estado:'Activo',parcela:'A1',resp:2},{id:11,nombre:'Lechuga romana',tipo:'Hoja verde',siembra:ago(20),cosecha_est:ago(-15),estado:'Activo',parcela:'B2',resp:2},{id:12,nombre:'Cilantro',tipo:'Aromática',siembra:ago(30),cosecha_est:ago(-5),estado:'Activo',parcela:'B3',resp:1}];
+const d={seq:100,um:{hmin:30,hmax:80,tmin:5,tmax:35,dias:3},usuarios:U,cultivos:C,
+riegos:[{id:20,cultivo:10,fecha:ago(1),litros:15,resp:2,obs:'Riego por la mañana'},{id:21,cultivo:11,fecha:ago(2),litros:8,resp:2,obs:''}],
+cosechas:[{id:30,cultivo:12,fecha:ago(7),cantidad:12,unidad:'manojos',resp:1,obs:'Primera cosecha'}],
+observaciones:[{id:40,cultivo:10,fecha:ago(3),texto:'Hojas inferiores con manchas leves',resp:2}],
+sensores:[{id:50,cultivo:10,tipo:'Humedad'},{id:51,cultivo:10,tipo:'Temperatura'},{id:52,cultivo:11,tipo:'Humedad'}],
+lecturas:[],alertas:[]};
+[55,52,48,44,38,34,27].forEach((v,i)=>d.lecturas.push({id:60+i,sensor:50,fecha:ago(6-i),valor:v}));
+[60,58,62].forEach((v,i)=>d.lecturas.push({id:70+i,sensor:52,fecha:ago(2-i),valor:v}));
+d.alertas.push({id:80,cultivo:10,tipo:'Humedad',msg:'Humedad baja (27%)',fecha:ago(0),estado:'Pendiente',atiende:''});extend(d);return d}
+function load(){try{db=JSON.parse(localStorage.getItem(KEY))}catch(e){db=null}if(!db)db=seed();chkRiego();save()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){}}
+const nm=(c,id)=>{const o=db[c].find(x=>x.id==id);return !o?'—':c=='sensores'?o.tipo+' · '+nm('cultivos',o.cultivo):o.nombre};
+const can=c=>user&&(user.rol=='Administrador'||(user.rol=='Encargado'&&c!='usuarios'));
+function addAl(c,t,m,f){if(db.alertas.some(a=>a.cultivo==c&&a.tipo==t&&a.estado=='Pendiente'&&a.msg.split(' (')[0]==m.split(' (')[0]))return;db.alertas.push({id:db.seq++,cultivo:c,tipo:t,msg:m,fecha:f,estado:'Pendiente',atiende:''})}
+function evalL(l){const s=db.sensores.find(x=>x.id==l.sensor);if(!s)return;const u=db.um,v=+l.valor;let m=null;
+if(s.tipo=='Humedad'){if(v<u.hmin)m='Humedad baja ('+v+'%)';else if(v>u.hmax)m='Humedad alta ('+v+'%)'}
+else{if(v>u.tmax)m='Temperatura alta ('+v+' °C)';else if(v<u.tmin)m='Temperatura baja ('+v+' °C)'}
+if(m)addAl(s.cultivo,s.tipo,m,l.fecha)}
+function chkRiego(){db.cultivos.filter(c=>c.estado=='Activo').forEach(c=>{const r=db.riegos.filter(x=>x.cultivo==c.id).map(x=>x.fecha).sort().pop();
+const dias=r?Math.floor((Date.now()-new Date(r))/864e5):999;
+if(dias>=db.um.dias&&!db.alertas.some(a=>a.cultivo==c.id&&a.tipo=='Riego'&&a.estado=='Pendiente'))addAl(c.id,'Riego','Sin riego '+(dias==999?'registrado':'hace '+dias+' días'),today())})}
+function chart(){const c=chartC||db.cultivos[0]?.id;const ids=db.sensores.filter(s=>s.cultivo==c&&s.tipo=='Humedad').map(s=>s.id);
+const L=db.lecturas.filter(l=>ids.includes(l.sensor)).sort((a,b)=>a.ts-b.ts).slice(-48);
+const sel='<select id="cc" aria-label="Cultivo">'+db.cultivos.map(x=>'<option value="'+x.id+'"'+(x.id==c?' selected':'')+'>'+esc(x.nombre)+'</option>').join('')+'</select>';
+if(L.length<2)return sel+'<p class="mut">Se necesitan al menos 2 lecturas de humedad para graficar.</p>';
+const x=i=>30+i*(560/(L.length-1)),y=v=>160-Math.max(0,Math.min(100,v))*1.4;
+return sel+'<svg viewBox="0 0 600 180" role="img" aria-label="Humedad del suelo por fecha"><line x1="30" x2="590" y1="'+y(db.um.hmin)+'" y2="'+y(db.um.hmin)+'" stroke="var(--bad)" stroke-dasharray="4"/><text x="34" y="'+(y(db.um.hmin)-4)+'" font-size="10" fill="var(--bad)">mínimo '+db.um.hmin+'%</text><polyline fill="none" stroke="var(--pri)" stroke-width="2.5" points="'+L.map((l,i)=>x(i)+','+y(l.valor)).join(' ')+'"/>'+L.map((l,i)=>'<circle cx="'+x(i)+'" cy="'+y(l.valor)+'" r="4" fill="var(--pri)"><title>'+fm(l.ts)+': '+l.valor+'%</title></circle>').join('')+'<text x="30" y="177" font-size="10" fill="var(--mut)">'+fm(L[0].ts)+'</text><text x="590" y="177" font-size="10" text-anchor="end" fill="var(--mut)">'+fm(L[L.length-1].ts)+'</text></svg>'}
+function panel(){const P=db.alertas.filter(a=>a.estado=='Pendiente'),w=ago(7);
+return '<div class="grid"><div class="stat"><b>'+db.cultivos.filter(c=>c.estado=='Activo').length+'</b>cultivos activos</div><div class="stat"><b>'+P.length+'</b>alertas pendientes</div><div class="stat"><b>'+db.riegos.filter(r=>r.fecha>=w).length+'</b>riegos esta semana</div><div class="stat"><b>'+db.cosechas.length+'</b>cosechas registradas</div><div class="stat"><b>'+db.sensores.length+'</b>sensores registrados</div><div class="stat"><b>'+db.lecturas.length+'</b>lecturas almacenadas</div></div>'+
+'<div class="box"><h3>Alertas pendientes</h3>'+(P.map(a=>'<div class="al"><span><b>'+esc(nm('cultivos',a.cultivo))+'</b>: '+esc(a.msg)+'</span><span>'+a.fecha+'</span></div>').join('')||'<p class="mut">No hay alertas pendientes.</p>')+'</div>'+
+'<div class="box"><h3>Humedad del suelo</h3>'+chart()+'</div>'}
+function list(c){const S=SC[c],w=can(c);let h='<div class="bar"><h2>'+S.t+'</h2>'+(w?'<button class="btn" data-add="'+c+'">+ Nuevo registro</button>':'<span class="mut">Solo lectura</span>')+'</div>';
+const rows=[...db[c]].reverse().slice(0,300);
+return h+'<input class="srch" id="q" type="search" placeholder="Buscar…" aria-label="Buscar" style="margin-bottom:10px"><div class="tw"><table><thead><tr>'+S.f.map(f=>'<th>'+f[1]+'</th>').join('')+(w?'<th></th>':'')+'</tr></thead><tbody>'+
+(rows.map(r=>'<tr>'+S.f.map(f=>'<td>'+esc(f[2]=='ref'?nm(f[3],r[f[0]]):r[f[0]])+'</td>').join('')+(w?'<td><button data-ed="'+c+':'+r.id+'">Editar</button> <button class="del" data-del="'+c+':'+r.id+'">Borrar</button></td>':'')+'</tr>').join('')||'<tr><td colspan="9" class="mut">Aún no hay registros. Usa “Nuevo registro” para agregar el primero.</td></tr>')+'</tbody></table></div>'}
+function alertas(){const w=can('alertas'),u=db.um;
+let h='<div class="bar"><h2>Alertas</h2></div>';
+if(user.rol=='Administrador')h+='<div class="box"><h3>Umbrales de alerta</h3><div class="um">'+[['hmin','Humedad mín. %'],['hmax','Humedad máx. %'],['tmin','Temp. mín. °C'],['tmax','Temp. máx. °C'],['dias','Días sin riego']].map(([k,l])=>'<label>'+l+'<input type="number" data-um="'+k+'" value="'+u[k]+'"></label>').join('')+'<button class="btn" data-saveum>Guardar umbrales</button></div></div>';
+return h+'<div class="tw"><table><thead><tr><th>Fecha</th><th>Cultivo</th><th>Tipo</th><th>Detalle</th><th>Estado</th><th></th></tr></thead><tbody>'+
+([...db.alertas].reverse().map(a=>'<tr><td>'+a.fecha+'</td><td>'+esc(nm('cultivos',a.cultivo))+'</td><td>'+a.tipo+'</td><td>'+esc(a.msg)+'</td><td><span class="tag'+(a.estado=='Pendiente'?' p':'')+'">'+a.estado+'</span>'+(a.atiende?'<br><small class="mut">'+esc(a.atiende)+'</small>':'')+'</td><td>'+(w&&a.estado=='Pendiente'?'<button data-at="'+a.id+'">Marcar atendida</button>':'')+'</td></tr>').join('')||'<tr><td colspan="6" class="mut">No hay alertas.</td></tr>')+'</tbody></table></div>'}
+let mc=null,mr=60,live=true,tickN=0;
+const cl=(v,a,b)=>Math.max(a,Math.min(b,v)),fm=t=>new Date(t).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+function sig(s,t){const k=s.id*7.3,n=Math.sin(t/9e5+k)*2+Math.sin(t/2.1e5+k*2)*1.2;
+if(s.tipo=='Humedad'){let v=52+14*Math.sin(t/2.5e7+k)+n;if(Math.sin(t/1.8e7+k*3)>.96)v-=30;return cl(v,5,95)}
+const D=new Date(t),h=D.getHours()+D.getMinutes()/60;let v=23+8*Math.sin((h-9)*Math.PI/12)+n*.6;if(Math.sin(t/3.2e7+k*5)>.97)v+=13;return v}
+function extend(d){const N=[['Chile serrano','Hortaliza','C1'],['Zanahoria','Raíz','C2'],['Calabacita','Hortaliza','D1'],['Rábano','Raíz','D2'],['Espinaca','Hoja verde','E1'],['Albahaca','Aromática','E2'],['Pepino','Hortaliza','F1']];
+N.forEach(([n,t,p],i)=>d.cultivos.push({id:13+i,nombre:n,tipo:t,siembra:ago(12+i*6),cosecha_est:i==3?ago(5):ago(-(8+i*7)),estado:i==3?'Cosechado':i==5?'En riesgo':'Activo',parcela:p,resp:1+i%2}));
+d.cultivos.forEach(c=>['Humedad','Temperatura'].forEach(t=>{if(!d.sensores.some(s=>s.cultivo==c.id&&s.tipo==t))d.sensores.push({id:d.seq++,cultivo:c.id,tipo:t})}));
+d.cultivos.filter(c=>c.id>12).forEach((c,i)=>{[i%3,3+i%2,7].forEach((a,j)=>d.riegos.push({id:d.seq++,cultivo:c.id,fecha:ago(a),litros:6+i*2+j,resp:c.resp,obs:''}));if(i%2==0)d.observaciones.push({id:d.seq++,cultivo:c.id,fecha:ago(2+i),texto:['Crecimiento uniforme','Se aplicó acolchado','Plaga leve retirada manualmente','Floración iniciada'][i%4],resp:c.resp})});
+d.cosechas.push({id:d.seq++,cultivo:16,fecha:ago(3),cantidad:4.5,unidad:'kg',resp:2,obs:'Cosecha completa'});
+const now=Date.now();d.lecturas=[];
+d.sensores.forEach(s=>{for(let m=7*1440;m>=0;m-=(m>1440?60:30)){const t=now-m*6e4;d.lecturas.push({id:d.seq++,sensor:s.id,fecha:iso(t),ts:t,valor:+sig(s,t).toFixed(1)})}})}
+function runs(L,lo,hi){const R=[];let c=null;L.forEach(l=>{const k=l.valor>hi?'Pico alto':l.valor<lo?'Valle bajo':null;if(k&&c&&c.k==k){if(k=='Pico alto'?l.valor>c.valor:l.valor<c.valor){c.valor=l.valor;c.ts=l.ts}}else if(k){c={k,valor:l.valor,ts:l.ts};R.push(c)}else c=null});return R}
+const fmt=t=>{const d=new Date(t);return mr<=1440?d.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit',second:mr<=30?'2-digit':undefined}):d.toLocaleDateString('es-MX',{day:'2-digit',month:'2-digit'})+' '+d.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'})};
+function chartTS(L,o){if(L.length<2)return '<p class="mut">Sin datos en este rango.</p>';
+const W=700,H=230,pl=44,pr=12,pt=14,pb=26,v=L.map(l=>l.valor),vmin=Math.min(...v),vmax=Math.max(...v),lo=Math.min(o.lo,vmin)-3,hi=Math.max(o.hi,vmax)+3,t0=L[0].ts,t1=L[L.length-1].ts;
+const X=t=>(pl+(t-t0)/(t1-t0||1)*(W-pl-pr)).toFixed(1),Y=x=>(pt+(hi-x)/(hi-lo)*(H-pt-pb)).toFixed(1);
+let S=L;if(L.length>260){const st=Math.ceil(L.length/260);S=L.filter((l,i)=>i%st==0||l.valor==vmin||l.valor==vmax)}
+const pmax=L.find(l=>l.valor==vmax),pmin=L.find(l=>l.valor==vmin);
+let s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+o.title+'">';
+for(let i=0;i<=4;i++){const y=lo+(hi-lo)*i/4;s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+Y(y)+'" y2="'+Y(y)+'" stroke="var(--bd)"/><text x="'+(pl-6)+'" y="'+(+Y(y)+4)+'" font-size="10" text-anchor="end" fill="var(--mut)">'+y.toFixed(0)+'</text>'}
+[o.lo,o.hi].forEach((y,i)=>s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+Y(y)+'" y2="'+Y(y)+'" stroke="var(--bad)" stroke-dasharray="5 4"/><text x="'+(W-pr)+'" y="'+(Y(y)-3)+'" font-size="10" text-anchor="end" fill="var(--bad)">'+(i?'máx ':'mín ')+y+o.u+'</text>');
+s+='<polyline fill="none" stroke="var(--pri)" stroke-width="1.8" points="'+S.map(l=>X(l.ts)+','+Y(l.valor)).join(' ')+'"/>';
+S.filter(l=>l.valor<o.lo||l.valor>o.hi).forEach(l=>s+='<circle cx="'+X(l.ts)+'" cy="'+Y(l.valor)+'" r="2.8" fill="var(--bad)"/>');
+[[pmax,'máx'],[pmin,'mín']].forEach(([p,n])=>s+='<circle cx="'+X(p.ts)+'" cy="'+Y(p.valor)+'" r="5" fill="none" stroke="var(--tx)" stroke-width="1.5"><title>'+n+' '+p.valor+o.u+' – '+fmt(p.ts)+'</title></circle><text x="'+X(p.ts)+'" y="'+(+Y(p.valor)+(n=='máx'?-9:16))+'" font-size="11" text-anchor="middle" fill="var(--tx)">'+p.valor+o.u+'</text>');
+for(let i=0;i<=4;i++){const t=t0+(t1-t0)*i/4;s+='<text x="'+X(t)+'" y="'+(H-6)+'" font-size="10" text-anchor="'+(i==0?'start':i==4?'end':'middle')+'" fill="var(--mut)">'+fmt(t)+'</text>'}
+return s+'</svg>'}
+function series(c,tp){const ids=db.sensores.filter(s=>s.cultivo==c&&s.tipo==tp).map(s=>s.id),from=Date.now()-mr*6e4;return db.lecturas.filter(l=>ids.includes(l.sensor)&&(l.ts||0)>=from).sort((a,b)=>a.ts-b.ts)}
+function monShell(){const c=mc||db.cultivos[0].id;return '<div class="bar"><h2>Monitoreo en tiempo real <span class="tag" id="lv">'+(live?'● En vivo':'Pausado')+'</span></h2></div><div class="box um"><label>Cultivo<select id="mcul">'+db.cultivos.map(x=>'<option value="'+x.id+'"'+(x.id==c?' selected':'')+'>'+esc(x.nombre)+'</option>').join('')+'</select></label><label>Rango de tiempo<select id="mran">'+[['5 minutos',5],['30 minutos',30],['1 hora',60],['6 horas',360],['24 horas',1440],['7 días',10080]].map(([l,m])=>'<option value="'+m+'"'+(m==mr?' selected':'')+'>'+l+'</option>').join('')+'</select></label><label><input type="checkbox" id="mlive"'+(live?' checked':'')+' style="width:auto"> Actualización en vivo</label></div><p class="mut">Lecturas generadas automáticamente cada 3 segundos para cada sensor de humedad y temperatura. Los puntos rojos están fuera de los umbrales y los círculos marcan el máximo y el mínimo del rango.</p><div id="mon"></div>'}
+function drawMon(){const el=$('#mon');if(!el)return;const c=mc||db.cultivos[0].id;let h='';
+[['Humedad del suelo','Humedad','%',db.um.hmin,db.um.hmax],['Temperatura','Temperatura',' °C',db.um.tmin,db.um.tmax]].forEach(([t,tp,u,lo,hi])=>{const L=series(c,tp),v=L.map(l=>l.valor),R=runs(L,lo,hi);
+h+='<div class="box"><h3>'+t+'</h3>'+(L.length?'<div class="grid">'+[['Actual',v[v.length-1]+u],['Mínimo',Math.min(...v)+u],['Máximo',Math.max(...v)+u],['Promedio',(v.reduce((a,b)=>a+b,0)/v.length).toFixed(1)+u],['Picos y valles fuera de umbral',R.length]].map(([k,x])=>'<div class="stat"><b>'+x+'</b>'+k+'</div>').join('')+'</div>':'')+chartTS(L,{title:t,u,lo,hi})+(R.length?'<details><summary>Ver picos y valles ('+R.length+')</summary><div class="tw"><table><thead><tr><th>Momento</th><th>Evento</th><th>Valor extremo</th></tr></thead><tbody>'+R.slice(-15).reverse().map(r=>'<tr><td>'+new Date(r.ts).toLocaleString('es-MX')+'</td><td>'+r.k+'</td><td>'+r.valor+u+'</td></tr>').join('')+'</tbody></table></div></details>':'')+'</div>'});el.innerHTML=h}
+setInterval(()=>{if(!live||!user)return;const now=Date.now();db.sensores.forEach(s=>{const l={id:db.seq++,sensor:s.id,fecha:today(),ts:now,valor:+sig(s,now).toFixed(1)};db.lecturas.push(l);evalL(l)});if(db.lecturas.length>7000)db.lecturas.splice(0,db.lecturas.length-7000);if(++tickN%7==0)save();if(tab=='monitoreo')drawMon()},3000);
+function log(a,e,d){(db.bitacora=db.bitacora||[]).push({id:db.seq++,fecha:new Date().toISOString().replace('T',' ').slice(0,16),usuario:user?user.nombre:'Sistema',accion:a,entidad:e,detalle:d})}
+const dd=f=>Math.round((new Date(f)-Date.now())/864e5);
+function reporte(){return '<div class="bar"><h2>Reporte por cultivo</h2></div><div class="tw"><table><thead><tr><th>Cultivo</th><th>Parcela</th><th>Estado</th><th>Días desde siembra</th><th>Días para cosecha</th><th>Último riego</th><th>Agua aplicada</th><th>Cosechado</th><th>Alertas pend.</th></tr></thead><tbody>'+db.cultivos.map(c=>{const R=db.riegos.filter(r=>r.cultivo==c.id),K=db.cosechas.filter(r=>r.cultivo==c.id),u=R.map(r=>r.fecha).sort().pop(),dc=dd(c.cosecha_est);return '<tr><td>'+esc(c.nombre)+'</td><td>'+esc(c.parcela)+'</td><td>'+c.estado+'</td><td>'+(-dd(c.siembra))+'</td><td>'+(dc>=0?dc:'Vencida hace '+(-dc))+'</td><td>'+(u||'—')+'</td><td>'+R.reduce((s,r)=>s+r.litros,0)+' L</td><td>'+(K.map(k=>k.cantidad+' '+k.unidad).join(', ')||'—')+'</td><td>'+db.alertas.filter(a=>a.cultivo==c.id&&a.estado=='Pendiente').length+'</td></tr>'}).join('')+'</tbody></table></div>'}
+function bitacora(){return '<div class="bar"><h2>Bitácora de auditoría</h2></div><div class="tw"><table><thead><tr><th>Fecha y hora</th><th>Usuario</th><th>Acción</th><th>Módulo</th><th>Detalle</th></tr></thead><tbody>'+([...(db.bitacora||[])].reverse().slice(0,200).map(b=>'<tr><td>'+b.fecha+'</td><td>'+esc(b.usuario)+'</td><td>'+b.accion+'</td><td>'+b.entidad+'</td><td>'+esc(b.detalle)+'</td></tr>').join('')||'<tr><td colspan="5" class="mut">Aún no hay movimientos registrados.</td></tr>')+'</tbody></table></div>'}
+function render(){
+if(!user){$('#app').innerHTML='<div class="login"><h1 style="color:var(--pri)">CultivaUP</h1><p class="mut">Gestión del huerto universitario</p><div class="box"><label>Entrar como<select id="lu">'+db.usuarios.map(u=>'<option value="'+u.id+'">'+esc(u.nombre)+' ('+u.rol+')</option>').join('')+'</select></label><button class="btn" data-login style="width:100%;margin-top:8px">Entrar</button><p class="mut" style="font-size:.85rem">Acceso de demostración: elige un usuario para probar cada rol. Los datos se guardan solo en este navegador.</p></div></div>';return}
+const T=[['panel','Panel'],['cultivos','Cultivos'],['riegos','Riegos'],['cosechas','Cosechas'],['observaciones','Observaciones'],['sensores','Sensores'],['lecturas','Lecturas'],['alertas','Alertas ('+db.alertas.filter(a=>a.estado=='Pendiente').length+')']];
+T.splice(1,0,['monitoreo','Monitoreo en vivo'],['reporte','Reporte por cultivo']);if(user.rol=='Administrador')T.push(['usuarios','Usuarios'],['bitacora','Bitácora']);
+const body=tab=='panel'?panel():tab=='monitoreo'?monShell():tab=='alertas'?alertas():tab=='reporte'?reporte():tab=='bitacora'?bitacora():list(tab);
+$('#app').innerHTML='<header><div><h1>CultivaUP</h1><small>Sistema de gestión del huerto universitario · '+esc(user.nombre)+' · '+user.rol+'</small></div><div>'+(user.rol=='Administrador'?'':'')+'<button class="btn" data-out style="background:var(--card);color:var(--tx)">Salir</button></div></header><div id="shell"><nav>'+T.map(([k,l])=>'<button data-tab="'+k+'"'+(k==tab?' class="on"':'')+'>'+l+'</button>').join('')+'</nav><main>'+body+'</main></div><footer>CultivaUP v1.0 · Grupo ISW-28 · UPSRJ</footer>';if(tab=='monitoreo')drawMon()}
+function openForm(c,id){const S=SC[c],o=id?db[c].find(x=>x.id==id):{};
+$('#frm').innerHTML='<h3>'+(id?'Editar':'Nuevo')+' registro</h3>'+S.f.map(f=>{const v=o[f[0]]??(f[2]=='date'?today():'');let t;
+if(f[2]=='sel')t='<select name="'+f[0]+'">'+f[3].map(x=>'<option'+(x==v?' selected':'')+'>'+x+'</option>').join('')+'</select>';
+else if(f[2]=='ref')t='<select name="'+f[0]+'">'+db[f[3]].map(x=>'<option value="'+x.id+'"'+(x.id==v?' selected':'')+'>'+esc(nm(f[3],x.id))+'</option>').join('')+'</select>';
+else t='<input name="'+f[0]+'" type="'+(f[2]=='date'?'date':f[2]=='num'?'number':'text')+'"'+(f[2]=='num'?' step="any"':'')+' value="'+esc(v)+'"'+(f[4]?'':' required')+'>';
+return '<label>'+f[1]+t+'</label>'}).join('')+'<div class="row"><button type="button" data-cancel>Cancelar</button><button class="btn" type="submit">Guardar</button></div>';
+$('#frm').dataset.c=c;$('#frm').dataset.id=id||'';$('#dlg').showModal()}
+$('#frm').addEventListener('submit',e=>{e.preventDefault();const c=e.target.dataset.c,id=e.target.dataset.id,S=SC[c],fd=new FormData(e.target),o={};
+S.f.forEach(f=>{let v=fd.get(f[0]);o[f[0]]=f[2]=='num'?Number(v):f[2]=='ref'?Number(v):v});
+if(c=='lecturas'&&(o.valor<0||o.valor>(db.sensores.find(s=>s.id==o.sensor)?.tipo=='Humedad'?100:80)))return alert('El valor está fuera del rango permitido para ese sensor.');
+if(c=='lecturas')o.ts=o.fecha==today()?Date.now():new Date(o.fecha+'T12:00:00').getTime();
+if(c=='cultivos'&&o.cosecha_est<o.siembra)return alert('La fecha de cosecha estimada no puede ser anterior a la siembra.');
+if(c=='riegos'&&o.litros<=0)return alert('Los litros deben ser mayores que 0.');
+if(c=='cosechas'&&o.cantidad<=0)return alert('La cantidad debe ser mayor que 0.');
+if(id){Object.assign(db[c].find(x=>x.id==id),o)}else{o.id=db.seq++;db[c].push(o);if(c=='lecturas')evalL(o)}
+log(id?'Edición':'Alta',S.t,S.f.slice(0,3).map(f=>f[2]=='ref'?nm(f[3],o[f[0]]):o[f[0]]).join(' · '));chkRiego();save();$('#dlg').close();render()});
+document.addEventListener('click',e=>{const d=e.target.dataset;if(!d)return;
+if('login'in d){user=db.usuarios.find(u=>u.id==$('#lu').value);tab='panel';log('Inicio de sesión','Acceso',user.rol)}
+else if('out'in d){user=null}
+else if('tab'in d){tab=d.tab}
+else if('add'in d){return openForm(d.add)}
+else if('ed'in d){const[c,i]=d.ed.split(':');return openForm(c,i)}
+else if('del'in d){const[c,i]=d.del.split(':');if(!confirm('¿Borrar este registro? No se puede deshacer.'))return;log('Baja',SC[c].t,nm(c,i));db[c]=db[c].filter(x=>x.id!=i);
+if(c=='cultivos'){const ss=db.sensores.filter(s=>s.cultivo==i).map(s=>s.id);['riegos','cosechas','observaciones','alertas'].forEach(k=>db[k]=db[k].filter(x=>x.cultivo!=i));db.lecturas=db.lecturas.filter(l=>!ss.includes(l.sensor));db.sensores=db.sensores.filter(s=>s.cultivo!=i)}
+if(c=='sensores')db.lecturas=db.lecturas.filter(l=>l.sensor!=i);
+save()}
+else if('at'in d){const a=db.alertas.find(x=>x.id==d.at);a.estado='Atendida';a.atiende='Atendida por '+user.nombre;log('Atención','Alertas',nm('cultivos',a.cultivo)+' · '+a.msg);save()}
+else if('saveum'in d){document.querySelectorAll('[data-um]').forEach(i=>db.um[i.dataset.um]=Number(i.value));log('Configuración','Alertas','Umbrales actualizados');chkRiego();save()}
+else if('reset'in d){if(!confirm('Se borrarán los datos actuales y se cargarán los de ejemplo.'))return;db=seed();chkRiego();save();user=db.usuarios[0]}
+else if('cancel'in d){return $('#dlg').close()}
+else return;render()});
+document.addEventListener('change',e=>{const i=e.target.id;if(i=='cc'){chartC=Number(e.target.value);render()}else if(i=='mcul'){mc=Number(e.target.value);drawMon()}else if(i=='mran'){mr=Number(e.target.value);drawMon()}else if(i=='mlive'){live=e.target.checked;$('#lv').textContent=live?'● En vivo':'Pausado'}});
+document.addEventListener('input',e=>{if(e.target.id=='q'){const v=e.target.value.toLowerCase();document.querySelectorAll('.tw tbody tr').forEach(r=>r.hidden=!r.textContent.toLowerCase().includes(v))}});
+load();render();
+</script></body></html>
