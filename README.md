@@ -36,7 +36,11 @@ Contraseña para todos: `Cultiva2026!`
 
 ## Tecnologías
 
-HTML, CSS y JavaScript sin dependencias. Alojado como Static Site en Render.
+Versión actual: 1.1. HTML, CSS y JavaScript sin dependencias. Alojado como Static Site en Render.
+
+## Pruebas
+
+`node pruebas.js index.html` ejecuta 16 casos automatizados (requiere Node.js). Los resultados de la v1.0 y la v1.1 están en `resultados_pruebas.txt`.
 
 ## Nota
 

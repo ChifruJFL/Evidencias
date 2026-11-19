@@ -1,0 +1,47 @@
+RESULTADOS DE PRUEBAS AUTOMATIZADAS - CultivaUP
+Fecha de ejecución: 18/11/2026
+Comando: node pruebas.js <archivo>
+
+=== Línea base: versión 1.0 (reconstruida a partir de los cambios documentados en SC-0007 a SC-0013) ===
+Archivo evaluado: baseline.html
+
+T-01  APROBADO  Datos iniciales con 3 usuarios y sus roles
+T-02  APROBADO  Inicio de sesión: acepta credenciales válidas y rechaza las incorrectas
+T-03  APROBADO  Permisos por rol (Administrador, Encargado, Consulta)
+T-04  APROBADO  Alerta de humedad al registrar una lectura bajo el umbral
+T-05  APROBADO  Alerta por falta de riego
+T-06  APROBADO  Alerta de inventario cuando la existencia llega al mínimo
+T-07  APROBADO  No se duplican alertas pendientes del mismo tipo y cultivo
+T-08  FALLO     Folio de solicitud no se repite después de borrar una
+T-09  FALLO     El historial de lecturas se conserva tras 15 min de monitoreo en vivo (300 ciclos)  [988 de 3820 lecturas anteriores a 1 h conservadas]
+T-10  APROBADO  Validación: un riego con 0 litros se rechaza
+T-11  APROBADO  Persistencia: un registro nuevo queda guardado en el almacenamiento
+T-12  FALLO     La pantalla de inicio de sesión no muestra credenciales
+T-13  APROBADO  Todas las secciones se muestran sin errores (Administrador)
+T-14  FALLO     Sin código muerto (manejador "reset" sin botón y expresión vacía)
+T-15  FALLO     El sistema enlaza la documentación (diagrama ER y Plan de Mantenimiento)
+T-16  FALLO     La clave de almacenamiento está versionada (cultivaup_v4)
+
+Resultado: 10 de 16 casos aprobados (62.5 %)
+
+=== Versión 1.1 (index.html publicado) ===
+Archivo evaluado: final.html
+
+T-01  APROBADO  Datos iniciales con 3 usuarios y sus roles
+T-02  APROBADO  Inicio de sesión: acepta credenciales válidas y rechaza las incorrectas
+T-03  APROBADO  Permisos por rol (Administrador, Encargado, Consulta)
+T-04  APROBADO  Alerta de humedad al registrar una lectura bajo el umbral
+T-05  APROBADO  Alerta por falta de riego
+T-06  APROBADO  Alerta de inventario cuando la existencia llega al mínimo
+T-07  APROBADO  No se duplican alertas pendientes del mismo tipo y cultivo
+T-08  APROBADO  Folio de solicitud no se repite después de borrar una
+T-09  APROBADO  El historial de lecturas se conserva tras 15 min de monitoreo en vivo (300 ciclos)  [3820 de 3820 lecturas anteriores a 1 h conservadas]
+T-10  APROBADO  Validación: un riego con 0 litros se rechaza
+T-11  APROBADO  Persistencia: un registro nuevo queda guardado en el almacenamiento
+T-12  APROBADO  La pantalla de inicio de sesión no muestra credenciales
+T-13  APROBADO  Todas las secciones se muestran sin errores (Administrador)
+T-14  APROBADO  Sin código muerto (manejador "reset" sin botón y expresión vacía)
+T-15  APROBADO  El sistema enlaza la documentación (diagrama ER y Plan de Mantenimiento)
+T-16  APROBADO  La clave de almacenamiento está versionada (cultivaup_v4)
+
+Resultado: 16 de 16 casos aprobados (100.0 %)
